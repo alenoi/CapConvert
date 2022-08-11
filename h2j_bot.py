@@ -28,7 +28,10 @@ async def on_message(self, message: discord.Message) -> None:
 
 @client.event
 async def on_ready():
-    print(f'{client.user.name} has connected to {client.guilds[0].name}!')
+    i = 0
+    for guild in client.guilds:
+        print(f'{client.user.name} has connected to {client.guilds[i].name}!')
+        i+=1
 
 
 @client.event
@@ -50,8 +53,12 @@ async def on_message(message):
 
 async def send_images(files_to_send, message):
     CHANNEL = client.get_channel(message.channel.id)
+    if message.author.nick:
+        mess = message.author.nick + " ezt nem bírta rendesen elküldeni:"
+    else:
+        mess = message.author.name + " ezt nem bírta rendesen elküldeni:"
     await CHANNEL.send(files=files_to_send,
-                       content=message.author.nick + " ezt nem bírta rendesen elküldeni:",
+                       content=mess,
                        # the message you want to appear next to the images
                        reference=message)
 
