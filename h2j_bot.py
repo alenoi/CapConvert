@@ -15,16 +15,20 @@ SERVER = ""
 if os.path.isfile(".env"):
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
-    SERVER = int(os.getenv('DISCORD_SERVER'))
 else:
     print('Cannot find environment file\n')
     TOKEN = input('Please enter your bot TOKEN!\n')
-    SERVER = input('Please enter the ID of your server!\n')
+
+
+@client.event
+async def on_message(self, message: discord.Message) -> None:
+    global SERVER
+    SERVER = message.message.guild.id
 
 
 @client.event
 async def on_ready():
-    print(f'{client.user.name} has connected to {client.get_guild(SERVER).name}!')
+    print(f'{client.user.name} has connected to {client.guilds[0].name}!')
 
 
 @client.event
@@ -37,7 +41,7 @@ async def on_message(message):
             urlparts_dot = item.url.split('.')
             if urlparts_dot[len(urlparts_dot) - 1].lower() == "heic":
                 isheic = True
-                await save_and_convert(files_to_send,files_to_delete, item)
+                await save_and_convert(files_to_send, files_to_delete, item)
         if isheic:
             await send_images(files_to_send, message)
             for item in files_to_delete:
@@ -52,7 +56,7 @@ async def send_images(files_to_send, message):
                        reference=message)
 
 
-async def save_and_convert(files_to_send,files_to_delete, item):
+async def save_and_convert(files_to_send, files_to_delete, item):
     urlparts_slash = item.url.split('/')
     ogfilename = urlparts_slash[len(urlparts_slash) - 1]
     open(ogfilename, "wb").write(requests.get(item.url).content)
@@ -64,7 +68,7 @@ async def save_and_convert(files_to_send,files_to_delete, item):
     os.remove(ogfilename)
 
 
-if TOKEN != "" and SERVER != "":
+if TOKEN != "":
     try:
         client.run(TOKEN)
     except:
