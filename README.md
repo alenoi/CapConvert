@@ -8,5 +8,5 @@ You can type in your TOKEN and serverID at every start or you can set them up in
 Invite the bot to your server: [INVITE](https://discord.com/api/oauth2/authorize?client_id=1006542721990807592&permissions=274878032896&scope=bot)
 
 ### Buy me a coffee
-[PayPal](https://www.paypal.com/paypalme/alenoii)
-[BuyMeACoffee](https://www.buymeacoffee.com/alenoii)
+- [PayPal](https://www.paypal.com/paypalme/alenoii)
+- [BuyMeACoffee](https://www.buymeacoffee.com/alenoii)
