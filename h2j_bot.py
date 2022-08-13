@@ -1,11 +1,13 @@
 import os
 import re
+
 import discord
+import moviepy.editor as moviepy
 import requests
 from PIL import Image
 from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
-import moviepy.editor as moviepy
+from pymediainfo import MediaInfo
 
 client = discord.Client()
 register_heif_opener()
@@ -29,10 +31,8 @@ async def on_message(self, message: discord.Message) -> None:
 
 @client.event
 async def on_ready():
-
     for guild in client.guilds:
         print(f'{client.user.name} has connected to {guild.name}!')
-
 
 
 @client.event
@@ -43,10 +43,10 @@ async def on_message(message):
     if not message.author.bot and len(message.attachments) > 0:
         for item in message.attachments:
             ext = item.url.split('.')[len(item.url.split('.')) - 1].lower()
-            if re.search('heic',ext):
+            if re.search('heic', ext):
                 isconvert = True
                 await heic2jpg(files_to_send, files_to_delete, item)
-            elif re.search('hevc',ext) or re.search('mp4',ext):
+            elif re.search('hevc', ext) or re.search('mp4', ext):
                 isconvert = True
                 await hevc2mp4(files_to_send, files_to_delete, item)
         if isconvert:
@@ -56,15 +56,16 @@ async def on_message(message):
 
 
 async def send_files(files_to_send, message):
-    CHANNEL = client.get_channel(message.channel.id)
-    if message.author.nick:
-        mess = f'Let me convert for you the files {message.author.nick} was unable to'
-    else:
-        mess = f'Let me convert for you the files {message.author.name} was unable to'
-    await CHANNEL.send(files=files_to_send,
-                       content=mess,
-                       # the message you want to appear next to the images
-                       reference=message)
+    if len(files_to_send) > 0:
+        CHANNEL = client.get_channel(message.channel.id)
+        if message.author.nick:
+            mess = f'Let me convert for you the files {message.author.nick} was unable to'
+        else:
+            mess = f'Let me convert for you the files {message.author.name} was unable to'
+        await CHANNEL.send(files=files_to_send,
+                           content=mess,
+                           # the message you want to appear next to the images
+                           reference=message)
 
 
 async def heic2jpg(files_to_send, files_to_delete, item):
@@ -83,12 +84,23 @@ async def hevc2mp4(files_to_send, files_to_delete, item):
     urlparts_slash = item.url.split('/')
     ogfilename = urlparts_slash[len(urlparts_slash) - 1]
     open(ogfilename, "wb").write(requests.get(item.url).content)
-    filename = f'{ogfilename.split(".")[0]}_c.mp4'
-    clip = moviepy.VideoFileClip(ogfilename)
-    clip.write_videofile(f'{filename}')
-    files_to_send.append(discord.File(filename))
-    files_to_delete.append(filename)
-    files_to_delete.append(ogfilename)
+    codec = await hevc_check(ogfilename)
+    if codec.upper() == 'HEVC':
+        filename = f'{ogfilename.split(".")[0]}_c.mp4'
+        clip = moviepy.VideoFileClip(ogfilename)
+        clip.write_videofile(f'{filename}')
+        files_to_send.append(discord.File(filename))
+        files_to_delete.append(filename)
+        files_to_delete.append(ogfilename)
+
+
+async def hevc_check(ogfilename):
+    info = MediaInfo.parse(ogfilename)
+    codec = ""
+    for track in info.tracks:
+        if track.track_type == "Video":
+            codec = "{t.format}".format(t=track)
+    return codec
 
 
 if TOKEN != "":
