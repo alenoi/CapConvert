@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
 from pymediainfo import MediaInfo
 
-client = discord.Client()
+intents = discord.Intents.default()
+
+client = discord.Client(intents=intents)
 register_heif_opener()
 
 TOKEN = ""
@@ -21,6 +23,11 @@ if os.path.isfile(".env"):
 else:
     print('Cannot find environment file\n')
     TOKEN = input('Please enter your bot TOKEN!\n')
+    saveToken = input('Do you want to save this TOKEN?\n y/n')
+    if saveToken.upper() == 'Y':
+        f = open(".env", "w")
+        f.write("DISCORD_TOKEN=MTAwNjU0MjcyMTk5MDgwNzU5Mg.GmP9jZ.2GCdb7C6xcZGNw9kFqELr0OXg2Nyu3nuGVLKJQ")
+        f.close()
 
 
 @client.event
