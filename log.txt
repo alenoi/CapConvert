@@ -1,0 +1,7 @@
+HEIC/HEVC converter has connected to Friendzone!
+HEIC/HEVC converter has connected to TEST!
+Moviepy - Building video 2022-08-11-121959869_c.mp4.
+MoviePy - Writing audio in 2022-08-11-121959869_cTEMP_MPY_wvf_snd.mp3
+MoviePy - Done.
+Moviepy - Writing video 2022-08-11-121959869_c.mp4
+
