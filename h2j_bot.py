@@ -9,7 +9,11 @@ from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
 from pymediainfo import MediaInfo
 
-intents = discord.Intents.default()
+intents = discord.Intents(messages=True)
+intents.typing = True
+intents.guilds = True
+intents.reactions = True
+intents.members = True
 
 client = discord.Client(intents=intents)
 register_heif_opener()
