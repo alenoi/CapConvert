@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
 from pymediainfo import MediaInfo
 
-intents = discord.Intents(messages=True, guilds=True)
+intents = discord.Intents(messages=True, message_content=True, guilds=True)
 intents.typing = True
 intents.reactions = True
 
