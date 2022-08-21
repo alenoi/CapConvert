@@ -85,7 +85,8 @@ async def hevc2mp4(files_to_send, files_to_delete, item):
     ogfilename = urlparts_slash[len(urlparts_slash) - 1]
     open(ogfilename, "wb").write(requests.get(item.url).content)
     codec = await hevc_check(ogfilename)
-    if codec.upper() == 'HEVC':
+    print(codec.upper())
+    if codec.upper() == 'HEVC' or codec.upper() == 'AV1':
         filename = f'{ogfilename.split(".")[0]}_c.mp4'
         clip = moviepy.VideoFileClip(ogfilename)
         clip.write_videofile(f'{filename}')
