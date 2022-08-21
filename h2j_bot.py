@@ -47,20 +47,16 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    print("message")
     files_to_delete: list[str] = []
     files_to_send: list[discord.File] = []
     isconvert = False
     if not message.author.bot and len(message.attachments) > 0:
-        print("attachment")
         for item in message.attachments:
             ext = item.url.split('.')[len(item.url.split('.')) - 1].lower()
             if re.search('heic', ext):
-                print(heic)
                 isconvert = True
                 await heic2jpg(files_to_send, files_to_delete, item)
             elif re.search('hevc', ext) or re.search('mp4', ext):
-                print(hevc)
                 isconvert = True
                 await hevc2mp4(files_to_send, files_to_delete, item)
         if isconvert:
@@ -70,9 +66,7 @@ async def on_message(message):
 
 
 async def send_files(files_to_send, message):
-    print("send")
     if len(files_to_send) > 0:
-        print("send nudes")
         CHANNEL = client.get_channel(message.channel.id)
         if message.author.nick:
             mess = f'Let me convert for you the files {message.author.nick} was unable to'
