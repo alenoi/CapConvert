@@ -47,7 +47,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-
+    print("message")
     files_to_delete: list[str] = []
     files_to_send: list[discord.File] = []
     isconvert = False
