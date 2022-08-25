@@ -49,33 +49,50 @@ async def on_ready():
 async def on_message(message):
     files_to_delete: list[str] = []
     files_to_send: list[discord.File] = []
-    isconvert = False
-    if not message.author.bot and len(message.attachments) > 0:
-        for item in message.attachments:
-            ext = item.url.split('.')[len(item.url.split('.')) - 1].lower()
-            if re.search('heic', ext):
-                isconvert = True
-                await heic2jpg(files_to_send, files_to_delete, item)
-            elif re.search('hevc', ext) or re.search('mp4', ext):
-                isconvert = True
-                await hevc2mp4(files_to_send, files_to_delete, item)
-        if isconvert:
+    if not message.author.bot:
+        if 'tiktok.com/' in message.content:
+            await tiktok_download(files_to_send, files_to_delete, message)
+        if len(message.attachments) > 0:
+            for item in message.attachments:
+                ext = item.url.split('.')[len(item.url.split('.')) - 1].lower()
+                if re.search('heic', ext):
+                    await heic2jpg(files_to_send, files_to_delete, item)
+                elif re.search('hevc', ext) or re.search('mp4', ext):
+                    await hevc2mp4(files_to_send, files_to_delete, item)
+    if len(files_to_send) > 0:
+        try:
             await send_files(files_to_send, message)
-            for item in files_to_delete:
-                os.remove(item)
+        except:
+            print("Could not send the file")
+    if len(files_to_delete) > 0:
+        for item in files_to_delete:
+            os.remove(item)
+
+
+async def tiktok_download(files_to_send, files_to_delete, message):
+    url = message.content.split('/')[3]
+    ogfilename = f'{url}.mp4'
+    filename = f'{ogfilename}_c.mp4'
+    os.system(f'python3 -m tiktok_downloader --url https://vt.tiktok.com/{url} --tiktok --save {ogfilename}')
+    clip = moviepy.VideoFileClip(ogfilename)
+    clipsize = 8000000 / os.path.getsize(ogfilename)
+    clip = clip.resize(clipsize-0.02)
+    clip.write_videofile(f'{filename}', threads=4)
+    files_to_send.append(discord.File(filename))
+    files_to_delete.append(filename)
+    files_to_delete.append(ogfilename)
 
 
 async def send_files(files_to_send, message):
-    if len(files_to_send) > 0:
-        CHANNEL = client.get_channel(message.channel.id)
-        if message.author.nick:
-            mess = f'Let me convert for you the files {message.author.nick} was unable to'
-        else:
-            mess = f'Let me convert for you the files {message.author.name} was unable to'
-        await CHANNEL.send(files=files_to_send,
-                           content=mess,
-                           # the message you want to appear next to the images
-                           reference=message)
+    CHANNEL = client.get_channel(message.channel.id)
+    if message.author.nick:
+        mess = f'Let me convert for you the files {message.author.nick} was unable to'
+    else:
+        mess = f'Let me convert for you the files {message.author.name} was unable to'
+    await CHANNEL.send(files=files_to_send,
+                       content=mess,
+                       # the message you want to appear next to the images
+                       reference=message)
 
 
 async def heic2jpg(files_to_send, files_to_delete, item):
