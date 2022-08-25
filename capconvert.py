@@ -76,7 +76,8 @@ async def tiktok_download(files_to_send, files_to_delete, message):
     os.system(f'python3.10 -m tiktok_downloader --url https://vt.tiktok.com/{url} --tiktok --save {ogfilename}')
     clip = moviepy.VideoFileClip(ogfilename)
     clipsize = 8000000 / os.path.getsize(ogfilename)
-    clip = clip.resize(clipsize-0.02)
+    if clipsize <= 1:
+        clip = clip.resize(clipsize-0.02)
     clip.write_videofile(f'{filename}', threads=4)
     files_to_send.append(discord.File(filename))
     files_to_delete.append(filename)
