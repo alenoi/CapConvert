@@ -73,7 +73,7 @@ async def tiktok_download(files_to_send, files_to_delete, message):
     url = message.content.split('/')[3]
     ogfilename = f'{url}.mp4'
     filename = f'{ogfilename}_c.mp4'
-    os.system(f'python3 -m tiktok_downloader --url https://vt.tiktok.com/{url} --tiktok --save {ogfilename}')
+    os.system(f'python3.10 -m tiktok_downloader --url https://vt.tiktok.com/{url} --tiktok --save {ogfilename}')
     clip = moviepy.VideoFileClip(ogfilename)
     clipsize = 8000000 / os.path.getsize(ogfilename)
     clip = clip.resize(clipsize-0.02)
