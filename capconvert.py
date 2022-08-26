@@ -72,13 +72,13 @@ async def on_message(message):
 async def tiktok_download(files_to_send, files_to_delete, message):
     url = message.content.split('/')[3]
     ogfilename = f'{url}.webm'
-    filename = f'{url}_c.mp4'
+    filename = f'{url}_c.webm'
     os.system(f'python3.10 -m tiktok_downloader --url https://vt.tiktok.com/{url} --tiktok --save {ogfilename}')
     clip = moviepy.VideoFileClip(ogfilename)
     clipsize = 8000000 / os.path.getsize(ogfilename)
     if clipsize <= 1:
-        clip = clip.resize(clipsize - 0.01)
-        clip.write_videofile(f'{filename}', threads=4)
+        # clip = clip.resize(clipsize - 0.01)
+        clip.write_videofile(f'{filename}', threads=4, codec='libvpx')
         files_to_send.append(discord.File(f'{filename}'))
         files_to_delete.append(filename)
     else:
@@ -95,7 +95,6 @@ async def send_files(files_to_send, message):
     embedVar.set_author(name=message.author.name, icon_url=message.author.avatar)
     await CHANNEL.send(embed=embedVar,
                        files=files_to_send,
-                       # content=mess,
                        reference=message
                        )
     await message.delete()
