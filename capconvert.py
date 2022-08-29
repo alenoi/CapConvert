@@ -142,7 +142,7 @@ async def media_convert(mediafiles: list[mediaFile]):
     for item in mediafiles:
         if 'heic' in item.fileName:
             item.convertedFile = await imageConvert(item.fileName)
-        elif 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName:
+        elif 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName or 'mov' in item.fileName:
             item.convertedFile = await videoConvert(item.fileName)
         else:
             item.convertedFile = item.fileName
@@ -167,6 +167,7 @@ async def videoConvert(path):
             clip.resize(clipsize)
             clip.write_videofile(cpath, threads=4, codec='libvpx')
     else:
+        cpath = path
         clip.close()
     return cpath
 
