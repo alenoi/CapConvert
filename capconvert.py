@@ -67,14 +67,16 @@ async def media_process(ogmsg):
         for item in ogmsg.attachments:
             mediafiles.append(urlParse(item.url))
 
-    embedmsg = await send_embed(ogmsg, mediafiles)
-    await media_download(mediafiles)
-    await media_convert(mediafiles)
-    await send_files(mediafiles, embedmsg)
+    for item in mediafiles:
+        if item.type == 'tiktok' or 'hevc' in item.fileName or 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName:
+            embedmsg = await send_embed(ogmsg, mediafiles)
+            await media_download(mediafiles)
+            await media_convert(mediafiles)
+            await send_files(mediafiles, embedmsg)
     cleanup(mediafiles)
 
 
-async def send_embed(ogmsg, ogFiles):
+async def send_embed(ogmsg, mediafiles: list[mediaFile]):
     CHANNEL = ogmsg.channel
     if ogmsg.author.nick:
         embedVar = discord.Embed(title='Message:', description=ogmsg.content, color=0xFF8800)
@@ -84,7 +86,7 @@ async def send_embed(ogmsg, ogFiles):
     embedVar.set_footer(text="File processing is in progress",
                         icon_url="https://cdn.discordapp.com/avatars/1006542721990807592/b377f09c6a20f90d9d8378e07fa13682.png?size=1024")
     fileList = ""
-    for file in ogFiles:
+    for file in mediafiles:
         fileList += f'\n{file.fileName}'
     embedVar.add_field(name='Attachments:', value=fileList, inline=False)
     message = await CHANNEL.send(embed=embedVar, files=None, reference=ogmsg)
