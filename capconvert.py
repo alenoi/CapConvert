@@ -65,15 +65,15 @@ async def media_process(ogmsg):
         mediafiles.append(urlParse(ogmsg.content))
     if len(ogmsg.attachments) > 0:
         for item in ogmsg.attachments:
-            mediafiles.append(urlParse(item.url))
+            if 'hevc' in item.url.lower() or 'heic' in item.url.lower() or 'mp4' in item.url.lower():
+                mediafiles.append(urlParse(item.url))
 
-    for item in mediafiles:
-        if item.type == 'tiktok' or 'hevc' in item.fileName or 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName:
-            embedmsg = await send_embed(ogmsg, mediafiles)
-            await media_download(mediafiles)
-            await media_convert(mediafiles)
-            await send_files(mediafiles, embedmsg)
-    cleanup(mediafiles)
+    if len(mediafiles) > 0:
+        embedmsg = await send_embed(ogmsg, mediafiles)
+        await media_download(mediafiles)
+        await media_convert(mediafiles)
+        await send_files(mediafiles, embedmsg)
+        cleanup(mediafiles)
 
 
 async def send_embed(ogmsg, mediafiles: list[mediaFile]):
@@ -106,6 +106,7 @@ def urlParse(url):
         mediafile.fileName += ".webm"
     if "discordapp" in url:
         mediafile.type = "discord"
+    mediafile.convertedFile = mediafile.fileName
     return mediafile
 
 
@@ -167,7 +168,6 @@ async def videoConvert(path):
             clip.write_videofile(cpath, threads=4, codec='libvpx')
     else:
         clip.close()
-        cpath = path
     return cpath
 
 
