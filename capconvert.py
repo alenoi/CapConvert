@@ -139,8 +139,10 @@ async def media_convert(mediafiles: list[mediaFile]):
     for item in mediafiles:
         if 'heic' in item.fileName:
             item.convertedFile = await imageConvert(item.fileName)
-        if 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName:
+        elif 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName:
             item.convertedFile = await videoConvert(item.fileName)
+        else:
+            item.convertedFile = item.fileName
 
 
 async def imageConvert(path):
