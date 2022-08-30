@@ -61,11 +61,10 @@ class mediaFile:
 
 async def media_process(ogmsg):
     mediafiles: list[mediaFile] = []
-    if 'tiktok.com/' in ogmsg.content:
-        url = ogmsg.content.split("://")[1]
-        url = url.split(" ")[0]
-        url = url.split("\n")[0]
-        url = f"https://{url}"
+    if 'tiktok.com' in ogmsg.content:
+        url = ogmsg.content.split("tiktok.com")[1]
+        url = url.split("/")[1]
+        url = f"https://vm.tiktok.com/{url}"
         mediafiles.append(urlParse(url))
     if len(ogmsg.attachments) > 0:
         for item in ogmsg.attachments:
