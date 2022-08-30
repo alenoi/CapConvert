@@ -62,7 +62,15 @@ class mediaFile:
 async def media_process(ogmsg):
     mediafiles: list[mediaFile] = []
     if 'tiktok.com/' in ogmsg.content:
-        mediafiles.append(urlParse(ogmsg.content))
+        url = ogmsg.content.split("://")[1]
+        print(url)
+        url = url.split(" ")[0]
+        print(url)
+        url = url.split("\n")[0]
+        print(url)
+        url = f"https://{url}"
+        print(url)
+        mediafiles.append(urlParse(url))
     if len(ogmsg.attachments) > 0:
         for item in ogmsg.attachments:
             if 'hevc' in item.url.lower() or 'heic' in item.url.lower() or 'mp4' in item.url.lower():
