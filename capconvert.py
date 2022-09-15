@@ -3,10 +3,10 @@ import re
 import sys
 
 import certifi
-import discord
-import moviepy.editor as moviepy
 import requests
 import urllib3
+import discord
+import moviepy.editor as moviepy
 from PIL import Image
 from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
@@ -129,7 +129,7 @@ async def media_download(mediafiles: list[mediaFile]):
 
 
 async def tiktok_download(url: str):
-    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url, preload_content=True)
+    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url,  retries=10)
     data = resp.data.decode('utf-8')
     try:
         data = data.split("playAddr")[1]
@@ -141,8 +141,11 @@ async def tiktok_download(url: str):
         print(data)
         return data
     except:
+        os.system(f"sudo wget {url}")
+        file = open("index.html", "r")
+        print(file.read())
         print(data)
-        raise Exception(f"Response error on {url}\nRespone:\n{data}")
+        raise Exception(f"Response error on {url}\nResponse:\n{data}")
 
 
 async def send_files(mediafiles: list[mediaFile], message):
