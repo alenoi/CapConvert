@@ -123,33 +123,20 @@ async def media_download(mediafiles: list[mediaFile]):
         if item.type == "tiktok":
             url = await tiktok_download(item.url, item.fileName)
         else:
-            url=item.url
+            url = item.url
         open(item.fileName, "wb").write(requests.get(url).content)
 
 
 async def tiktok_download(url: str, file: str):
     http = urllib.PoolManager()
-    # url += f"?is_from_webapp=v1&item_id={extract_video_id_from_url(url)}"
     print(url)
     resp = http.request("GET", url)
     data = str(resp.data)
     data = data.split("playAddr")[1].split("?")[0][3:]
-    data = data.replace("u002F","").replace("\\","/").replace("//","/")
+    data = data.replace("u002F", "").replace("\\", "/").replace("//", "/")
     print(data)
     return data
-    # video_bytes = TikTokApi.video(id=id).bytes()
-    # with open(file, 'wb') as output:
-    #     output.write(video_bytes)
 
-
-def extract_video_id_from_url(url):
-    if "@" in url and "/video/" in url:
-        return url.split("/video/")[1].split("?")[0]
-    else:
-        raise TypeError(
-            "URL format not supported. Below is an example of a supported url.\n"
-            "https://www.tiktok.com/@therock/video/6829267836783971589"
-        )
 
 async def send_files(mediafiles: list[mediaFile], message):
     files_to_send: list[discord.File] = []
