@@ -5,7 +5,7 @@ import sys
 import discord
 import moviepy.editor as moviepy
 import requests
-import urllib3 as urllib
+import urllib3
 from PIL import Image
 from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
@@ -128,9 +128,10 @@ async def media_download(mediafiles: list[mediaFile]):
 
 
 async def tiktok_download(url: str, file: str):
-    http = urllib.PoolManager()
-    resp = http.request("GET", url)
+    resp = urllib3.PoolManager().request("GET", url)
     data = str(resp.data)
+    print(resp.status)
+    # print(data)
     data = data.split("playAddr")[1]
     data = data.split("?")[0][3:]
     data = data.replace("u002F", "")
