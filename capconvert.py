@@ -2,6 +2,7 @@ import os
 import re
 import sys
 
+import certifi
 import discord
 import moviepy.editor as moviepy
 import requests
@@ -121,14 +122,14 @@ def urlParse(url):
 async def media_download(mediafiles: list[mediaFile]):
     for item in mediafiles:
         if item.type == "tiktok":
-            url = await tiktok_download(item.url, item.fileName)
+            url = await tiktok_download(item.url)
         else:
             url = item.url
         open(item.fileName, "wb").write(requests.get(url).content)
 
 
-async def tiktok_download(url: str, file: str):
-    resp = urllib3.PoolManager().request("GET", url)
+async def tiktok_download(url: str):
+    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url)
     data = resp.data.decode('utf-8')
     try:
         data = data.split("playAddr")[1]
