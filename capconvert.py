@@ -129,6 +129,7 @@ async def media_download(mediafiles: list[mediaFile]):
 
 
 async def tiktok_download(url: str):
+    url = "https://stackoverflow.com/questions/68032884/getting-typeerror-must-be-real-number-not-nonetype-whenever-trying-to-run-wr"
     resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url,  retries=10)
     data = resp.data.decode('utf-8')
     try:
