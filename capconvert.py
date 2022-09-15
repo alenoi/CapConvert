@@ -139,7 +139,7 @@ async def tiktok_download(url: str):
         data = data.replace("\\", "/")
         data = data.replace("//", "/")
         data = data.replace("https:/" , "https://")
-        print(data)>
+        print(data)
         return data
     except:
         os.system(f"sudo wget {url}")
