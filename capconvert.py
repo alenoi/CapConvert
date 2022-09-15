@@ -129,12 +129,15 @@ async def media_download(mediafiles: list[mediaFile]):
 
 async def tiktok_download(url: str, file: str):
     resp = urllib3.PoolManager().request("GET", url)
-    data = str(resp.data)
+    data = resp.data.decode('utf-8')
     try:
         data = data.split("playAddr")[1]
         data = data.split("?")[0][3:]
         data = data.replace("u002F", "")
-        data = data .replace("\\", "/").replace("//", "/")
+        data = data.replace("\\", "/")
+        data = data.replace("//", "/")
+        data = data.replace("https:/" , "https://")
+        print(data)
         return data
     except:
         print(data)
