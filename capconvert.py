@@ -131,12 +131,14 @@ async def tiktok_download(url: str, file: str):
     resp = urllib3.PoolManager().request("GET", url)
     data = str(resp.data)
     print(resp.status)
-    # print(data)
-    data = data.split("playAddr")[1]
-    data = data.split("?")[0][3:]
-    data = data.replace("u002F", "")
-    data = data .replace("\\", "/").replace("//", "/")
-    return data
+    try:
+        data = data.split("playAddr")[1]
+        data = data.split("?")[0][3:]
+        data = data.replace("u002F", "")
+        data = data .replace("\\", "/").replace("//", "/")
+        return data
+    except:
+        print(data)
 
 
 async def send_files(mediafiles: list[mediaFile], message):
