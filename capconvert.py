@@ -138,7 +138,7 @@ async def tiktok_download(url: str, file: str):
         return data
     except:
         print(data)
-        raise Exception(f"Response error on {url}\nRespone:\n{data}")
+        raise Exception(f"Response error on {url}\nRespone:\n{str(resp.data)}")
 
 
 async def send_files(mediafiles: list[mediaFile], message):
