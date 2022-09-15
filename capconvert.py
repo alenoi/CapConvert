@@ -139,11 +139,11 @@ async def tiktok_download(url: str):
         data = data.replace("\\", "/")
         data = data.replace("//", "/")
         data = data.replace("https:/" , "https://")
-        print(data)
+        print(data)>
         return data
     except:
-        os.system(f"sudo wget {url} -i tiktok.html")
-        file = open("tiktok.html", "r")
+        os.system(f"sudo wget {url}")
+        file = open(url.split("/")[len(url.split("/"))-1], "r")
         print(file.read())
         print(data)
         raise Exception(f"Response error on {url}\nResponse:\n{data}")
