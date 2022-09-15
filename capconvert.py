@@ -130,7 +130,6 @@ async def media_download(mediafiles: list[mediaFile]):
 async def tiktok_download(url: str, file: str):
     resp = urllib3.PoolManager().request("GET", url)
     data = str(resp.data)
-    print(resp.status)
     try:
         data = data.split("playAddr")[1]
         data = data.split("?")[0][3:]
@@ -139,7 +138,7 @@ async def tiktok_download(url: str, file: str):
         return data
     except:
         print(data)
-        raise Exception(f"Response error on {url}")
+        raise Exception(f"Response error on {url}\nRespone:\n{data}")
 
 
 async def send_files(mediafiles: list[mediaFile], message):
