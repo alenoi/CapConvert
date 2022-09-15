@@ -5,6 +5,7 @@ import sys
 import discord
 import moviepy.editor as moviepy
 import requests
+import urllib3 as urllib
 from PIL import Image
 from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
@@ -63,8 +64,12 @@ async def media_process(ogmsg):
     mediafiles: list[mediaFile] = []
     if 'tiktok.com' in ogmsg.content:
         url = ogmsg.content.split("tiktok.com")[1]
-        url = url.split("/")[1]
-        url = f"https://vm.tiktok.com/{url}"
+        if "/video/" in url:
+            url = url.split("?")[0]
+            url = f"https://tiktok.com{url}"
+        else:
+            url = url.split("/")[1]
+            url = f"https://vm.tiktok.com/{url}"
         mediafiles.append(urlParse(url))
     if len(ogmsg.attachments) > 0:
         for item in ogmsg.attachments:
@@ -106,7 +111,7 @@ def urlParse(url):
         mediafile.fileName = urlparts_slash[len(urlparts_slash) - 2].lower()
     if "tiktok" in url:
         mediafile.type = "tiktok"
-        mediafile.fileName += ".webm"
+        mediafile.fileName += ".mp4"
     if "discordapp" in url:
         mediafile.type = "discord"
     mediafile.convertedFile = mediafile.fileName
@@ -116,10 +121,35 @@ def urlParse(url):
 async def media_download(mediafiles: list[mediaFile]):
     for item in mediafiles:
         if item.type == "tiktok":
-            os.system(f'python3.10 -m tiktok_downloader --url {item.url} --tiktok --save {item.fileName}')
-        if item.type == "discord":
-            open(item.fileName, "wb").write(requests.get(item.url).content)
+            url = await tiktok_download(item.url, item.fileName)
+        else:
+            url=item.url
+        open(item.fileName, "wb").write(requests.get(url).content)
 
+
+async def tiktok_download(url: str, file: str):
+    http = urllib.PoolManager()
+    # url += f"?is_from_webapp=v1&item_id={extract_video_id_from_url(url)}"
+    print(url)
+    resp = http.request("GET", url)
+    data = str(resp.data)
+    data = data.split("playAddr")[1].split("?")[0][3:]
+    data = data.replace("u002F","").replace("\\","/").replace("//","/")
+    print(data)
+    return data
+    # video_bytes = TikTokApi.video(id=id).bytes()
+    # with open(file, 'wb') as output:
+    #     output.write(video_bytes)
+
+
+def extract_video_id_from_url(url):
+    if "@" in url and "/video/" in url:
+        return url.split("/video/")[1].split("?")[0]
+    else:
+        raise TypeError(
+            "URL format not supported. Below is an example of a supported url.\n"
+            "https://www.tiktok.com/@therock/video/6829267836783971589"
+        )
 
 async def send_files(mediafiles: list[mediaFile], message):
     files_to_send: list[discord.File] = []
@@ -145,7 +175,9 @@ async def media_convert(mediafiles: list[mediaFile]):
     for item in mediafiles:
         if 'heic' in item.fileName:
             item.convertedFile = await imageConvert(item.fileName)
-        elif 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName or 'mov' in item.fileName:
+        else:
+            item.convertedFile = item.fileName
+        if 'hevc' in item.fileName or 'mp4' in item.fileName or 'webm' in item.fileName or 'mov' in item.fileName:
             item.convertedFile = await videoConvert(item.fileName)
         else:
             item.convertedFile = item.fileName
@@ -164,7 +196,7 @@ async def videoConvert(path):
     codec = hevc_check(path).lower()
     clipsize = fileSizeLimit / os.path.getsize(path) - 0.01
     if codec == 'hevc' or codec == 'av1' or clipsize <= 1:
-        clip.write_videofile(cpath, threads=4, codec='libvpx')
+        clip.write_videofile(cpath, fps=30, threads=4, codec='libvpx')
         clipsize = fileSizeLimit / os.path.getsize(cpath) - 0.01
         if clipsize <= 1:
             clip.resize(clipsize)
