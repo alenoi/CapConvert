@@ -142,8 +142,8 @@ async def tiktok_download(url: str):
         print(data)
         return data
     except:
-        os.system(f"sudo wget {url}")
-        file = open("index.html", "r")
+        os.system(f"sudo wget {url} -i tiktok.html")
+        file = open("tiktok.html", "r")
         print(file.read())
         print(data)
         raise Exception(f"Response error on {url}\nResponse:\n{data}")
