@@ -3,10 +3,10 @@ import re
 import sys
 
 import certifi
-import requests
-import urllib3
 import discord
 import moviepy.editor as moviepy
+import requests
+import urllib3
 from PIL import Image
 from dotenv import load_dotenv
 from pillow_heif import register_heif_opener
@@ -132,21 +132,17 @@ async def tiktok_download(url: str):
     headers = {
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
     }
-
-    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url,  retries=10, headers=headers)
+    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url, retries=10, headers=headers)
     data = resp.data.decode('utf-8')
-    try:
-        data = data.split("playAddr")[1]
-        data = data.split("?")[0][3:]
-        data = data.replace("u002F", "")
-        data = data.replace("\\", "/")
-        data = data.replace("//", "/")
-        data = data.replace("https:/" , "https://")
-        print(data)
-        return data
-    except:
-        print(data)
-        raise Exception(f"Response error on {url}\nResponse:\n{data}")
+
+    data = data.split("playAddr")[1]
+    data = data.split("?")[0][3:]
+    data = data.replace("u002F", "")
+    data = data.replace("\\", "/")
+    data = data.replace("//", "/")
+    data = data.replace("https:/", "https://")
+    print(data)
+    return data
 
 
 async def send_files(mediafiles: list[mediaFile], message):
