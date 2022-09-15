@@ -132,8 +132,10 @@ async def tiktok_download(url: str, file: str):
     print(url)
     resp = http.request("GET", url)
     data = str(resp.data)
-    data = data.split("playAddr")[1].split("?")[0][3:]
-    data = data.replace("u002F", "").replace("\\", "/").replace("//", "/")
+    data = data.split("playAddr")[1]
+    data = data.split("?")[0][3:]
+    data = data.replace("u002F", "")
+    data = data .replace("\\", "/").replace("//", "/")
     print(data)
     return data
 
