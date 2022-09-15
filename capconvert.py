@@ -129,7 +129,7 @@ async def media_download(mediafiles: list[mediaFile]):
 
 
 async def tiktok_download(url: str):
-    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url)
+    resp = urllib3.PoolManager(ca_certs=certifi.where()).request("GET", url, preload_content=True)
     data = resp.data.decode('utf-8')
     try:
         data = data.split("playAddr")[1]
